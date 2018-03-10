@@ -38,16 +38,16 @@ class Net(nn.Module):
 			nn.Conv2d(conv1_out_chan, conv2_out_chan, kernel_size=conv2_kern_size,
 				stride=conv2_stride, padding=conv2_pad),
 			nn.MaxPool2d(kernel_size=pool2_size, stride=pool2_stride),
-			nn.Relu(inplace=True),
+			nn.ReLU(inplace=True),
 			nn.BatchNorm2d(conv2_out_chan),
 			nn.Conv2d(conv2_out_chan, conv3_out_chan, kernel_size=conv3_kern_size,
 				stride=conv3_stride, padding=conv3_pad),
-			nn.Relu(inplace=True),
+			nn.ReLU(inplace=True),
 			nn.BatchNorm2d(conv3_out_chan),
 			nn.Conv2d(conv3_out_chan, conv4_out_chan, kernel_size=conv4_kern_size,
 				stride=conv4_stride, padding=conv4_pad),
 			nn.MaxPool2d(kernel_size=pool4_size, stride=pool4_stride),
-			nn.Relu(inplace=True),
+			nn.ReLU(inplace=True),
 			nn.BatchNorm2d(conv4_out_chan)
 			)
 

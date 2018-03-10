@@ -28,6 +28,9 @@ IMG_PATH = './datasets/PetImages'
 
 use_cuda = torch.cuda.is_available()
 
+from model import *
+from train_valid import *
+
 def seperate_data():
 
 	if not os.path.exists(TRAIN_PATH):
@@ -58,17 +61,17 @@ def seperate_data():
 
 def load_data(batch_size=64):
 
-	train_data = dset.ImageFolder(root=TRAIN_PATH, transform=None)
+	train_data = dset.ImageFolder(root=TRAIN_PATH, transform=transforms.ToTensor())
 	train_data.imgs = train_data.imgs[:-1999]
 	train_loader = torch.utils.data.DataLoader(train_data,
 											   batch_size=batch_size, shuffle=True)
 
-	valid_data = dset.ImageFolder(root=TRAIN_PATH, transform=None)
+	valid_data = dset.ImageFolder(root=TRAIN_PATH, transform=transforms.ToTensor())
 	valid_data.imgs = valid_data.imgs[-1999:]
 	valid_loader = torch.utils.data.DataLoader(valid_data,
 											   batch_size=batch_size, shuffle=True)
 
-	test_data = dset.ImageFolder(root=TEST_PATH, transform=None)
+	test_data = dset.ImageFolder(root=TEST_PATH, transform=transforms.ToTensor())
 	test_loader = torch.utils.data.DataLoader(test_data,
 											  batch_size=batch_size, shuffle=True)
 

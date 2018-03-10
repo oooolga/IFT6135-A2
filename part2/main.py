@@ -33,3 +33,8 @@ if __name__ == '__main__':
 
 	print 'Loading model...'
 	model = Net()
+
+	if use_cuda:
+		model.cuda()
+
+	run(model, train_loader, valid_loader, test_loader, args.epoch, args.learning_rate, args.momentum)
