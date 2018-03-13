@@ -63,9 +63,15 @@ def _evaluate_data_set(model, data_loader):
 	return avg_loss, accuracy
 
 
-def run(model, train_loader, valid_loader, test_loader, total_epoch, lr, momentum):
-	print('Learning rate={}'.format(lr))
-	optimizer = optim.SGD(model.parameters(), lr=lr, momentum=momentum)
+def run(model, train_loader, valid_loader, test_loader, total_epoch, lr, momentum, opt,
+		lr_decay=1e-5):
+
+	if opt == 'Adagrad':
+		print 'Learning rate decay:\t{}\n'.format(lr_decay)
+		optimizer = optim.Adagrad(model.parameters(), lr=lr, lr_decay=lr_decay)
+	else:
+		print 'Momentum:\t\t{}\n'.format(momentum)
+		optimizer = optim.SGD(model.parameters(), lr=lr, momentum=momentum)
 
 	print('| epoch: {}'.format(0))
 	avg_loss, accuracy = _evaluate_data_set(model, train_loader)
@@ -73,7 +79,7 @@ def run(model, train_loader, valid_loader, test_loader, total_epoch, lr, momentu
 	avg_loss, accuracy = _evaluate_data_set(model, valid_loader)
 	print('| valid loss: {:.4f}\tvalid acc: {:.4f}'.format(avg_loss, accuracy))
 	avg_loss, accuracy = _evaluate_data_set(model, test_loader)
-	print('| test loss: {:.4f}\tvalid acc: {:.4f}'.format(avg_loss, accuracy))
+	print('| test loss: {:.4f}\ttest acc: {:.4f}'.format(avg_loss, accuracy))
 
 	for epoch in range(1, total_epoch+1):
 

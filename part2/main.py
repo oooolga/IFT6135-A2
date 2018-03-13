@@ -14,9 +14,16 @@ def parse():
 	parser.add_argument('--test_batch_size', default=200, type=int,
 						help='Mini-batch size for testing')
 	parser.add_argument('--epoch', default=100, type=int, help='Number of epochs')
+	parser.add_argument('-o', '--optimizer', default='SGD', type=str, help='Optimizer')
 
 	args = parser.parse_args()
 	return args
+
+def output_arguments(args):
+	print 'Seed:\t\t\t{}'.format(args.seed)
+	print 'Learning rate:\t\t{}'.format(args.learning_rate)
+	print 'Batch size:\t\t{}'.format(args.batch_size)
+	print 'Optimizer:\t\t{}'.format(args.optimizer)
 
 if __name__ == '__main__':
 
@@ -34,11 +41,15 @@ if __name__ == '__main__':
 	train_loader, valid_loader, test_loader = load_data(batch_size=args.batch_size,
 														test_batch_size=args.test_batch_size)
 
-	print 'Loading model...'
+	print 'Loading model...\n'
+
 	#model = Net()
 	model = ResNet(BottleneckBlock, [3,4,6,4])
+
+	output_arguments(args)
 
 	if use_cuda:
 		model.cuda()
 
-	run(model, train_loader, valid_loader, test_loader, args.epoch, args.learning_rate, args.momentum)
+	run(model, train_loader, valid_loader, test_loader, args.epoch, args.learning_rate,
+		args.momentum, args.optimizer)
