@@ -31,7 +31,7 @@ IMG_PATH = './datasets/PetImages'
 use_cuda = torch.cuda.is_available()
 GLOBAL_TEMP = None
 
-def visualize_kernel(kernel_tensor, im_name='conv1_kernel.jpg', pad=1, im_scale=10.0):
+def visualize_kernel(kernel_tensor, im_name='conv1_kernel.jpg', pad=1, im_scale=100.0):
 
 	def factorization(n):
 		from math import sqrt
