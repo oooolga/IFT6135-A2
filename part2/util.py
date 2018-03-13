@@ -31,7 +31,7 @@ IMG_PATH = './datasets/PetImages'
 use_cuda = torch.cuda.is_available()
 GLOBAL_TEMP = None
 
-def visualize_kernel(kernel_tensor, img_name='conv1_kernel.jpg', pad=1):
+def visualize_kernel(kernel_tensor, im_name='conv1_kernel.jpg', pad=1, im_scale=10):
 
 	def factorization(n):
 		from math import sqrt
@@ -63,9 +63,10 @@ def visualize_kernel(kernel_tensor, img_name='conv1_kernel.jpg', pad=1):
 	#padded_kernel_tensor = padded_kernel_tensor.view(1, grid_X*X, grid_Y*Y, -1)
 
 	# kernel in numpy
-	kernel_img = np.uint8((padded_kernel_tensor.data).numpy()).reshape(grid_X*X,
+	kernel_im = np.uint8((padded_kernel_tensor.data).numpy()).reshape(grid_X*X,
 																	   grid_Y*Y, -1)
-	scipy.misc.imsave(os.path.join(RESULT_PATH, img_name), kernel_img)
+	kernel_im = scipy.misc.imresize(kernel_im, im_scale)
+	scipy.misc.imsave(os.path.join(RESULT_PATH, im_name), kernel_im)
 
 
 
