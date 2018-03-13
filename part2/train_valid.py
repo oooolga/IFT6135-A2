@@ -64,6 +64,7 @@ def _evaluate_data_set(model, data_loader):
 
 
 def run(model, train_loader, valid_loader, test_loader, total_epoch, lr, momentum):
+	print('Learning rate={}'.format(lr))
 	optimizer = optim.SGD(model.parameters(), lr=lr, momentum=momentum)
 
 	print('| epoch: {}'.format(0))
@@ -71,6 +72,8 @@ def run(model, train_loader, valid_loader, test_loader, total_epoch, lr, momentu
 	print('| train loss: {:.4f}\ttrain acc: {:.4f}'.format(avg_loss, accuracy))
 	avg_loss, accuracy = _evaluate_data_set(model, valid_loader)
 	print('| valid loss: {:.4f}\tvalid acc: {:.4f}'.format(avg_loss, accuracy))
+	avg_loss, accuracy = _evaluate_data_set(model, test_loader)
+	print('| test loss: {:.4f}\tvalid acc: {:.4f}'.format(avg_loss, accuracy))
 
 	for epoch in range(1, total_epoch+1):
 

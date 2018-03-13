@@ -12,7 +12,9 @@ import torch.optim as optim
 
 import numpy as np
 import argparse, os
-import copy, glob
+import copy, glob, math
+
+import random
 
 import matplotlib as mpl
 mpl.use('Agg')
@@ -27,6 +29,7 @@ TEST_PATH = './datasets/test'
 IMG_PATH = './datasets/PetImages'
 
 use_cuda = torch.cuda.is_available()
+GLOBAL_TEMP = None
 
 from model import *
 from train_valid import *
@@ -59,21 +62,22 @@ def seperate_data():
 			file_name = os.path.basename(file)
 			os.rename(file, os.path.join(TEST_PATH, 'dog', file_name))
 
-def load_data(batch_size=64):
+def load_data(batch_size=64, test_batch_size=1000):
 
 	train_data = dset.ImageFolder(root=TRAIN_PATH, transform=transforms.ToTensor())
-	train_data.imgs = train_data.imgs[:-1999]
+	train_imgs = random.sample(train_data.imgs, len(train_data))
+	train_data.imgs = train_imgs[:-2499]
 	train_loader = torch.utils.data.DataLoader(train_data,
 											   batch_size=batch_size, shuffle=True)
 
 	valid_data = dset.ImageFolder(root=TRAIN_PATH, transform=transforms.ToTensor())
-	valid_data.imgs = valid_data.imgs[-1999:]
+	valid_data.imgs = train_imgs[-2499:]
 	valid_loader = torch.utils.data.DataLoader(valid_data,
 											   batch_size=batch_size, shuffle=True)
 
 	test_data = dset.ImageFolder(root=TEST_PATH, transform=transforms.ToTensor())
 	test_loader = torch.utils.data.DataLoader(test_data,
-											  batch_size=batch_size, shuffle=True)
+											  batch_size=test_batch_size, shuffle=True)
 
 	return train_loader, valid_loader, test_loader
 	
