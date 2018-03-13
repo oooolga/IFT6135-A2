@@ -3,7 +3,7 @@ __email__ 	=	"olga.xu823@gmail.com"
 
 from util import *
 
-def _train(model, train_loader, optimizer):
+def _train(model, train_loader, optimizer, verbose):
 
 	model.train()
 
@@ -22,7 +22,7 @@ def _train(model, train_loader, optimizer):
 		loss.backward()
 		optimizer.step()
 
-		if batch_idx % 50 == 0:
+		if verbose and batch_idx % 50 == 0:
 			print '| | iter: {}\tloss: {:.4f}'.format(batch_idx, loss.data[0])
 
 	return loss
@@ -63,7 +63,7 @@ def _evaluate_data_set(model, data_loader):
 	return avg_loss, accuracy
 
 
-def run(model, train_loader, valid_loader, test_loader, total_epoch, lr, momentum, opt,
+def run(model, train_loader, valid_loader, test_loader, total_epoch, lr, opt, momentum,
 		lr_decay=1e-5):
 
 	if opt == 'Adagrad':
@@ -84,7 +84,12 @@ def run(model, train_loader, valid_loader, test_loader, total_epoch, lr, momentu
 	for epoch in range(1, total_epoch+1):
 
 		print('| epoch: {}'.format(epoch))
-		_ = _train(model, train_loader, optimizer)
+		_ = _train(model, train_loader, optimizer, verbose=True)
+
+		# visualize kernels
+		visualize_kernel(model.features[1].weight)
+		
+		# output training status
 		avg_loss, accuracy = _evaluate_data_set(model, train_loader)
 		print('| train loss: {:.4f}\ttrain acc: {:.4f}'.format(avg_loss, accuracy))
 		avg_loss, accuracy = _evaluate_data_set(model, valid_loader)
