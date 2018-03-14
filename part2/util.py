@@ -19,6 +19,16 @@ import matplotlib as mpl
 mpl.use('Agg')
 import matplotlib.pyplot as plt
 
+use_cuda = torch.cuda.is_available()
+
+torch.manual_seed(123)
+
+if use_cuda:
+	torch.cuda.manual_seed_all(123)
+
+np.random.seed(123)
+random.seed(123)
+
 DATA_PATH = './datasets'
 TRAIN_PATH_OLD = './datasets/train_64x64'
 TEST_PATH_OLD = './datasets/valid_64x64'
@@ -28,7 +38,6 @@ RESULT_PATH = './result'
 
 IMG_PATH = './datasets/PetImages'
 
-use_cuda = torch.cuda.is_available()
 GLOBAL_TEMP = None
 
 def visualize_kernel(kernel_tensor, im_name='conv1_kernel.jpg', pad=1, im_scale=100.0,

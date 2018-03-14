@@ -33,13 +33,6 @@ if __name__ == '__main__':
 
 	args = parse()
 
-	torch.manual_seed(args.seed)
-
-	if use_cuda:
-		torch.cuda.manual_seed_all(args.seed)
-
-	random.seed(args.seed)
-
 	print 'Loading data...'
 	#seperate_data()
 	train_loader, valid_loader, test_loader = load_data(batch_size=args.batch_size,

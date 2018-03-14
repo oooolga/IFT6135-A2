@@ -64,7 +64,7 @@ def _evaluate_data_set(model, data_loader):
 
 
 def run(model, train_loader, valid_loader, test_loader, model_name, 
-		total_epoch, lr, opt, momentum, lr_decay=1e-5, weight_decay=1e-5):
+		total_epoch, lr, opt, momentum, lr_decay=1e-5, weight_decay=5e-5):
 
 	if opt == 'Adagrad':
 		print 'Learning rate decay:\t{}'.format(lr_decay)
