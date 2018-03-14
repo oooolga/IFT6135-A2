@@ -64,11 +64,17 @@ def _evaluate_data_set(model, data_loader):
 
 
 def run(model, train_loader, valid_loader, test_loader, model_name, 
-		total_epoch, lr, opt, momentum, lr_decay=1e-5):
+		total_epoch, lr, opt, momentum, lr_decay=1e-5, weight_decay=1e-5):
 
 	if opt == 'Adagrad':
-		print 'Learning rate decay:\t{}\n'.format(lr_decay)
-		optimizer = optim.Adagrad(model.parameters(), lr=lr, lr_decay=lr_decay)
+		print 'Learning rate decay:\t{}'.format(lr_decay)
+		print 'Weight decay:\t\t{}\n'.format(weight_decay)
+		optimizer = optim.Adagrad(model.parameters(), lr=lr, lr_decay=lr_decay,
+								  weight_decay=weight_decay)
+	if opt == 'Adam':
+		print 'Weight decay:\t\t{}\n'.format(weight_decay)
+		optimizer = optim.Adam(model.parameters(), lr=lr,
+							   weight_decay=weight_decay)
 	else:
 		print 'Momentum:\t\t{}\n'.format(momentum)
 		optimizer = optim.SGD(model.parameters(), lr=lr, momentum=momentum)
@@ -89,6 +95,11 @@ def run(model, train_loader, valid_loader, test_loader, model_name,
 	test_loss.append(avg_loss)
 	test_acc.append(accuracy)
 	print('| test loss: {:.4f}\ttest acc: {:.4f}'.format(avg_loss, accuracy))
+
+	# visualize kernels
+	visualize_kernel(model.features[1].weight,
+					 im_name='conv1_kernel_epoch_{}.jpg'.format(0),
+					 model_name=model_name)
 
 	for epoch in range(1, total_epoch+1):
 

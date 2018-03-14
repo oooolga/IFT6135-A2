@@ -5,7 +5,7 @@ from util import *
 
 def parse():
 	parser = argparse.ArgumentParser()
-	parser.add_argument('-lr', '--learning_rate', default=5e-2, type=float,
+	parser.add_argument('-lr', '--learning_rate', default=1e-2, type=float,
 						help='Learning rate')
 	parser.add_argument('-m', '--momentum', default=0.2, type=float, help="Momentum")
 	parser.add_argument('-s', '--seed', default=111, type=int, help='Random seed')
@@ -48,7 +48,6 @@ if __name__ == '__main__':
 	print 'Loading model...\n'
 
 	model = Net()
-	#model = ResNet(BottleneckBlock, [3,4,6,4])
 
 	output_arguments(args)
 

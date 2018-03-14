@@ -73,6 +73,8 @@ def visualize_kernel(kernel_tensor, im_name='conv1_kernel.jpg', pad=1, im_scale=
 
 def plot_acc_loss(train_loss, train_acc, val_loss, val_acc, test_loss, test_acc,
 				  model_name=''):
+
+	plt.clf()
 	plt.plot(range(len(train_loss)), train_loss, 'ro-', label='train')
 	plt.plot(range(len(train_loss)), val_loss, 'bs-', label='valid')
 	plt.plot(range(len(train_loss)), test_loss, 'g^-', label='test')
@@ -81,11 +83,11 @@ def plot_acc_loss(train_loss, train_acc, val_loss, val_acc, test_loss, test_acc,
 	plt.ylabel('Loss')
 
 	plt.title('Epoch vs Loss')
-	plt.legend(loc=4)
+	plt.legend(loc=1)
 	print '| saving {}...'.format('{}/{}_loss_curve.png'.format(RESULT_PATH, model_name))
 	plt.savefig('{}/{}_loss_curve.png'.format(RESULT_PATH, model_name))
-	plt.clf()
 
+	plt.clf()
 	plt.plot(range(len(train_loss)), train_acc, 'ro-', label='train')
 	plt.plot(range(len(train_loss)), val_acc, 'bs-', label='valid')
 	plt.plot(range(len(train_loss)), test_acc, 'g^-', label='test')
