@@ -40,22 +40,23 @@ IMG_PATH = './datasets/PetImages'
 
 GLOBAL_TEMP = None
 
-def visualize_kernel(kernel_tensor, im_name='conv1_kernel.jpg', pad=1, im_scale=100.0,
-					 model_name=''):
+def factorization(n):
+	from math import sqrt
+	for i in range(int(sqrt(float(n))), 0, -1):
+		if n % i == 0:
+			if i == 1: print('Who would enter a prime number of filters')
+			return int(n / i), i
 
-	def factorization(n):
-		from math import sqrt
-		for i in range(int(sqrt(float(n))), 0, -1):
-			if n % i == 0:
-				if i == 1: print('Who would enter a prime number of filters')
-				return int(n / i), i
+def visualize_kernel(kernel_tensor, im_name='conv1_kernel.jpg', pad=1, im_scale=100.0,
+					 model_name='', rescale=True):
 
 	# map tensor wight in [0,255]
-	max_w = torch.max(kernel_tensor)
-	min_w = torch.min(kernel_tensor)
-	scale = torch.abs(max_w-min_w)
-	kernel_tensor = (kernel_tensor - min_w) / scale * 255.0
-	kernel_tensor = torch.ceil(kernel_tensor)
+	if rescale:
+		max_w = torch.max(kernel_tensor)
+		min_w = torch.min(kernel_tensor)
+		scale = torch.abs(max_w-min_w)
+		kernel_tensor = (kernel_tensor - min_w) / scale * 255.0
+		kernel_tensor = torch.ceil(kernel_tensor)
 
 	# pad kernel
 	p2d = (pad, pad, pad, pad)
@@ -77,7 +78,7 @@ def visualize_kernel(kernel_tensor, im_name='conv1_kernel.jpg', pad=1, im_scale=
 																	   grid_Y*Y, -1)
 	kernel_im = scipy.misc.imresize(kernel_im, im_scale, 'nearest')
 	print '| Saving {}...'.format(os.path.join(RESULT_PATH, model_name+'_'+im_name))
-	scipy.misc.imsave(os.path.join(RESULT_PATH, im_name), kernel_im)
+	scipy.misc.imsave(os.path.join(RESULT_PATH, model_name+'_'+im_name), kernel_im)
 
 
 def plot_acc_loss(train_loss, train_acc, val_loss, val_acc, test_loss, test_acc,

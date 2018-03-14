@@ -68,8 +68,8 @@ class Net(nn.Module):
 
 
 	def forward(self, x):
-		f = self.features(x)
-		f = f.view(-1, 7*7*self.out_chan)
+		self.f = self.features(x)
+		f = self.f.view(-1, 7*7*self.out_chan)
 		c = self.classifier(f)
 		return c
 
