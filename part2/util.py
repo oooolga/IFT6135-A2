@@ -110,6 +110,21 @@ def plot_acc_loss(train_loss, train_acc, val_loss, val_acc, test_loss, test_acc,
 	print '| saving {}...'.format('{}/{}_acc_curve.png'.format(RESULT_PATH, model_name))
 	plt.savefig('{}/{}_acc_curve.png'.format(RESULT_PATH, model_name))
 
+def plot_error(train_err, val_err, test_err, model_name=''):
+
+	plt.clf()
+	plt.plot(range(len(train_err)), train_err, 'ro-', label='train')
+	plt.plot(range(len(train_err)), val_err, 'bs-', label='valid')
+	#plt.plot(range(len(train_err)), test_err, 'g^-', label='test')
+
+	plt.xlabel('Epoch')
+	plt.ylabel('Loss')
+
+	plt.title('Epoch vs Error')
+	plt.legend(loc=1)
+	print '| saving {}...'.format('{}/{}_error_curve.png'.format(RESULT_PATH, model_name))
+	plt.savefig('{}/{}_error_curve.png'.format(RESULT_PATH, model_name))
+
 
 def seperate_data():
 

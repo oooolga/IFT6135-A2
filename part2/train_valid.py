@@ -27,16 +27,22 @@ def _train(model, train_loader, optimizer, verbose):
 
 	return loss
 
-def _evaluate_data_set(model, data_loader, get_top_misclassified=None):
+def _evaluate_data_set(model, data_loader, get_top_misclassified=None,
+					   get_ambiguous=None):
 
 	model.eval()
 	total_loss, correct = 0, 0
 	total_data, total_batch = 0, 0
 	top_ims = None
+	amb_ims = None
 
 	if get_top_misclassified:
 		top_ims = np.empty([0,3,64,64])
 		top_count = 0
+
+	if get_ambiguous:
+		amb_ims = np.empty([0,3,64,64])
+		amb_count = 0
 
 	for batch_idx, (data, target) in enumerate(data_loader):
 
@@ -62,6 +68,14 @@ def _evaluate_data_set(model, data_loader, get_top_misclassified=None):
 			top_data = top_data.data.numpy()
 			top_ims = np.concatenate((top_ims, top_data), 0)
 
+		if get_ambiguous and amb_count < get_ambiguous:
+			_, amb_index = torch.min(torch.abs(out_eval-0.5),0)
+			amb_index = amb_index.data[0]
+			amb_count += 1
+			amb_data = data[amb_index].view(1,3,64,64).cpu()
+			amb_data = amb_data.data.numpy()
+			amb_ims = np.concatenate((amb_ims, amb_data), 0)
+
 		out_eval = out_eval.data-0.5
 
 		predicted = torch.ceil(out_eval).int()
@@ -75,7 +89,7 @@ def _evaluate_data_set(model, data_loader, get_top_misclassified=None):
 	avg_loss = total_loss / float(total_batch)
 	accuracy = correct / float(total_data)
 
-	return avg_loss, accuracy, top_ims
+	return avg_loss, accuracy, top_ims, amb_ims
 
 
 def run(model, train_loader, valid_loader, test_loader, model_name, 
@@ -98,24 +112,24 @@ def run(model, train_loader, valid_loader, test_loader, model_name,
 	train_loss, valid_loss, test_loss = [], [], []
 
 	print('| epoch: {}'.format(0))
-	avg_loss, accuracy, _ = _evaluate_data_set(model, train_loader)
+	avg_loss, accuracy, _ , _ = _evaluate_data_set(model, train_loader)
 	train_loss.append(avg_loss)
 	train_acc.append(accuracy)
 	print('| train loss: {:.4f}\ttrain acc: {:.4f}'.format(avg_loss, accuracy))
-	avg_loss, accuracy, _ = _evaluate_data_set(model, valid_loader)
+	avg_loss, accuracy, _ , _ = _evaluate_data_set(model, valid_loader)
 	valid_loss.append(avg_loss)
 	valid_acc.append(accuracy)
 	print('| valid loss: {:.4f}\tvalid acc: {:.4f}'.format(avg_loss, accuracy))
-	avg_loss, accuracy, misclassified = _evaluate_data_set(model, test_loader, 25)
+	avg_loss, accuracy, _ , _ = _evaluate_data_set(model, test_loader)
 	test_loss.append(avg_loss)
 	test_acc.append(accuracy)
 	print('| test loss: {:.4f}\ttest acc: {:.4f}'.format(avg_loss, accuracy))
 
 	# visualize kernels
-	misclassified = torch.ceil(torch.FloatTensor(misclassified).cuda() * 255.0)
-	visualize_kernel(misclassified,
-					 im_name='misclassified_epoch_{}.jpg'.format(0),
-					 model_name=model_name, im_scale=1.0, rescale=False)
+	#misclassified = torch.ceil(torch.FloatTensor(misclassified).cuda() * 255.0)
+	#visualize_kernel(misclassified,
+	#				 im_name='misclassified_epoch_{}.jpg'.format(0),
+	#				 model_name=model_name, im_scale=1.0, rescale=False)
 	visualize_kernel(model.features[1].weight,
 					 im_name='conv1_kernel_epoch_{}.jpg'.format(0),
 					 model_name=model_name)
@@ -131,25 +145,31 @@ def run(model, train_loader, valid_loader, test_loader, model_name,
 						 model_name=model_name)
 		
 		# output training status
-		avg_loss, accuracy, _ = _evaluate_data_set(model, train_loader)
+		avg_loss, accuracy, _ , _ = _evaluate_data_set(model, train_loader)
 		train_loss.append(avg_loss)
 		train_acc.append(accuracy)
 		print('| train loss: {:.4f}\ttrain acc: {:.4f}'.format(avg_loss, accuracy))
-		avg_loss, accuracy, _ = _evaluate_data_set(model, valid_loader)
+		avg_loss, accuracy, _ , _ = _evaluate_data_set(model, valid_loader)
 		valid_loss.append(avg_loss)
 		valid_acc.append(accuracy)
 		print('| valid loss: {:.4f}\tvalid acc: {:.4f}'.format(avg_loss, accuracy))
-		avg_loss, accuracy, _ = _evaluate_data_set(model, test_loader)
+		avg_loss, accuracy, _ , _ = _evaluate_data_set(model, test_loader)
 		test_loss.append(avg_loss)
 		test_acc.append(accuracy)
 		print('| test loss: {:.4f}\ttest acc: {:.4f}'.format(avg_loss, accuracy))
 
 	plot_acc_loss(train_loss, train_acc, valid_loss, valid_acc, test_loss, test_acc,
 				  model_name=model_name)
+	plot_error(1-np.array(train_acc), 1-np.array(valid_acc), 1-np.array(test_acc),
+			   model_name=model_name)
 
-	_, _, misclassified = _evaluate_data_set(model, test_loader, 25)
+	_, _, misclassified, ambiguous = _evaluate_data_set(model, test_loader, 25, 25)
 	misclassified = torch.ceil(torch.FloatTensor(misclassified).cuda() * 255.0)
+	ambiguous = torch.ceil(torch.FloatTensor(ambiguous).cuda() * 255.0)
 	visualize_kernel(misclassified,
 					 im_name='misclassified_epoch_{}.jpg'.format(epoch),
+					 model_name=model_name, im_scale=1.0, rescale=False)
+	visualize_kernel(ambiguous,
+					 im_name='ambiguous_epoch_{}.jpg'.format(epoch),
 					 model_name=model_name, im_scale=1.0, rescale=False)
 	
