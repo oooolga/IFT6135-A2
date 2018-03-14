@@ -63,8 +63,8 @@ def _evaluate_data_set(model, data_loader):
 	return avg_loss, accuracy
 
 
-def run(model, train_loader, valid_loader, test_loader, total_epoch, lr, opt, momentum,
-		lr_decay=1e-5):
+def run(model, train_loader, valid_loader, test_loader, model_name, 
+		total_epoch, lr, opt, momentum, lr_decay=1e-5):
 
 	if opt == 'Adagrad':
 		print 'Learning rate decay:\t{}\n'.format(lr_decay)
@@ -73,12 +73,21 @@ def run(model, train_loader, valid_loader, test_loader, total_epoch, lr, opt, mo
 		print 'Momentum:\t\t{}\n'.format(momentum)
 		optimizer = optim.SGD(model.parameters(), lr=lr, momentum=momentum)
 
+	train_acc, valid_acc, test_acc = [], [], []
+	train_loss, valid_loss, test_loss = [], [], []
+
 	print('| epoch: {}'.format(0))
 	avg_loss, accuracy = _evaluate_data_set(model, train_loader)
+	train_loss.append(avg_loss)
+	train_acc.append(accuracy)
 	print('| train loss: {:.4f}\ttrain acc: {:.4f}'.format(avg_loss, accuracy))
 	avg_loss, accuracy = _evaluate_data_set(model, valid_loader)
+	valid_loss.append(avg_loss)
+	valid_acc.append(accuracy)
 	print('| valid loss: {:.4f}\tvalid acc: {:.4f}'.format(avg_loss, accuracy))
 	avg_loss, accuracy = _evaluate_data_set(model, test_loader)
+	test_loss.append(avg_loss)
+	test_acc.append(accuracy)
 	print('| test loss: {:.4f}\ttest acc: {:.4f}'.format(avg_loss, accuracy))
 
 	for epoch in range(1, total_epoch+1):
@@ -87,12 +96,23 @@ def run(model, train_loader, valid_loader, test_loader, total_epoch, lr, opt, mo
 		_ = _train(model, train_loader, optimizer, verbose=True)
 
 		# visualize kernels
-		visualize_kernel(model.features[1].weight)
+		visualize_kernel(model.features[1].weight,
+						 im_name='conv1_kernel_epoch_{}.jpg'.format(epoch),
+						 model_name=model_name)
 		
 		# output training status
 		avg_loss, accuracy = _evaluate_data_set(model, train_loader)
+		train_loss.append(avg_loss)
+		train_acc.append(accuracy)
 		print('| train loss: {:.4f}\ttrain acc: {:.4f}'.format(avg_loss, accuracy))
 		avg_loss, accuracy = _evaluate_data_set(model, valid_loader)
+		valid_loss.append(avg_loss)
+		valid_acc.append(accuracy)
 		print('| valid loss: {:.4f}\tvalid acc: {:.4f}'.format(avg_loss, accuracy))
 		avg_loss, accuracy = _evaluate_data_set(model, test_loader)
+		test_loss.append(avg_loss)
+		test_acc.append(accuracy)
 		print('| test loss: {:.4f}\ttest acc: {:.4f}'.format(avg_loss, accuracy))
+
+	plot_acc_loss(train_loss, train_acc, valid_loss, valid_acc, test_loss, test_acc,
+				  model_name=model_name)

@@ -31,14 +31,15 @@ IMG_PATH = './datasets/PetImages'
 use_cuda = torch.cuda.is_available()
 GLOBAL_TEMP = None
 
-def visualize_kernel(kernel_tensor, im_name='conv1_kernel.jpg', pad=1, im_scale=100.0):
+def visualize_kernel(kernel_tensor, im_name='conv1_kernel.jpg', pad=1, im_scale=100.0,
+					 model_name=''):
 
 	def factorization(n):
 		from math import sqrt
 		for i in range(int(sqrt(float(n))), 0, -1):
 			if n % i == 0:
 				if i == 1: print('Who would enter a prime number of filters')
-				return i, int(n / i)
+				return int(n / i), i
 
 	# map tensor wight in [0,255]
 	max_w = torch.max(kernel_tensor)
@@ -65,10 +66,37 @@ def visualize_kernel(kernel_tensor, im_name='conv1_kernel.jpg', pad=1, im_scale=
 	# kernel in numpy
 	kernel_im = np.uint8((padded_kernel_tensor.data).numpy()).reshape(grid_X*X,
 																	   grid_Y*Y, -1)
-	kernel_im = scipy.misc.imresize(kernel_im, im_scale)
-	print 'Saving {}...'.format(os.path.join(RESULT_PATH, im_name))
+	kernel_im = scipy.misc.imresize(kernel_im, im_scale, 'nearest')
+	print '| Saving {}...'.format(os.path.join(RESULT_PATH, model_name+'_'+im_name))
 	scipy.misc.imsave(os.path.join(RESULT_PATH, im_name), kernel_im)
 
+
+def plot_acc_loss(train_loss, train_acc, val_loss, val_acc, test_loss, test_acc,
+				  model_name=''):
+	plt.plot(range(len(train_loss)), train_loss, 'ro-', label='train')
+	plt.plot(range(len(train_loss)), val_loss, 'bs-', label='valid')
+	plt.plot(range(len(train_loss)), test_loss, 'g^-', label='test')
+
+	plt.xlabel('Epoch')
+	plt.ylabel('Loss')
+
+	plt.title('Epoch vs Loss')
+	plt.legend(loc=4)
+	print '| saving {}...'.format('{}/{}_loss_curve.png'.format(RESULT_PATH, model_name))
+	plt.savefig('{}/{}_loss_curve.png'.format(RESULT_PATH, model_name))
+	plt.clf()
+
+	plt.plot(range(len(train_loss)), train_acc, 'ro-', label='train')
+	plt.plot(range(len(train_loss)), val_acc, 'bs-', label='valid')
+	plt.plot(range(len(train_loss)), test_acc, 'g^-', label='test')
+
+	plt.xlabel('Epoch')
+	plt.ylabel('Accuracy')
+
+	plt.title('Epoch vs Accuracy')
+	plt.legend(loc=4)
+	print '| saving {}...'.format('{}/{}_acc_curve.png'.format(RESULT_PATH, model_name))
+	plt.savefig('{}/{}_acc_curve.png'.format(RESULT_PATH, model_name))
 
 
 def seperate_data():

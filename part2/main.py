@@ -15,11 +15,13 @@ def parse():
 						help='Mini-batch size for testing')
 	parser.add_argument('--epoch', default=13, type=int, help='Number of epochs')
 	parser.add_argument('-o', '--optimizer', default='SGD', type=str, help='Optimizer')
+	parser.add_argument('-n', '--model_name', default='model_1', type=str, help='Model name')
 
 	args = parser.parse_args()
 	return args
 
 def output_arguments(args):
+	print 'Model name:\t\t{}'.format(args.model_name)
 	print 'Seed:\t\t\t{}'.format(args.seed)
 	print 'Total epoch:\t\t{}'.format(args.epoch)
 	print 'Batch size:\t\t{}'.format(args.batch_size)
@@ -53,5 +55,5 @@ if __name__ == '__main__':
 	if use_cuda:
 		model.cuda()
 
-	run(model, train_loader, valid_loader, test_loader, args.epoch, args.learning_rate,
-		 args.optimizer, args.momentum)
+	run(model, train_loader, valid_loader, test_loader,  args.model_name, args.epoch,
+		args.learning_rate, args.optimizer, args.momentum)
